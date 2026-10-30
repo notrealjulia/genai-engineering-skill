@@ -1,0 +1,21 @@
+Copyright (c) 2026 Julia Spicina
+
+This repository (genai-engineering) is licensed under the Creative Commons
+Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0).
+
+  https://creativecommons.org/licenses/by-nc/4.0/
+
+You may share and adapt the material for non-commercial purposes, provided you give
+appropriate credit, link to the license, and indicate if changes were made.
+
+Attribution
+-----------
+The content is condensed and adapted from "GenAI Patterns" (Draft, 2026) by
+Sangam Pandey (https://genaipatterns.dev), licensed under CC BY-NC 4.0.
+
+Changes: the book text is condensed and paraphrased into reference files; additions
+not in the book are marked "Beyond the book"; the book's code snippets are rewritten
+and extended, and new examples are written for patterns the book has no code for.
+
+The full legal code of the license is at:
+  https://creativecommons.org/licenses/by-nc/4.0/legalcode
