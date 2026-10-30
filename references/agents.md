@@ -70,7 +70,8 @@ always needs the same lookup (just do the lookup, no model decision needed).
   `search_customer_orders(customer_id, date_range?)` says when and how to use it. Write
   descriptions that say *when* to use the tool, and name parameters precisely.
 - *Too many tools.* With ~30 tools the model confuses similar ones. Expose only the
-  tools relevant to the current context.
+  tools relevant to the current context (a Semantic Router can pick the tool set; see the
+  Routing & Orchestration chapter).
 - *Infinite loops:* the model repeats a call with slightly different arguments because it
   can't use the result. Cap tool calls per request and break on repeated calls.
 - *Security:* the model generates inputs your code executes. Allowlist tools, validate

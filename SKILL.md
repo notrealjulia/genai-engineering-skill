@@ -1,6 +1,6 @@
 ---
 name: genai-engineering
-description: Use when designing, building, reviewing or debugging LLM-powered features and systems — writing or improving prompts, choosing between prompting techniques (chain-of-thought, few-shot, prompt chaining, self-consistency, prompt optimization), building or fixing RAG and retrieval (chunking, embeddings, vector or hybrid search, BM25, reranking, citations, hallucination and grounding checks, deep search, agentic RAG), building agents (tool calling, function calling, ReAct loops, code execution sandboxes, plan-and-execute, multi-agent supervisors), structuring multi-step LLM pipelines, or making architectural trade-offs about accuracy, cost and latency in GenAI code. Also use when an LLM call, RAG system or agent gives inconsistent, wrongly formatted, hallucinated or incorrect output, or loops, picks the wrong tool or runs up cost.
+description: Use when designing, building, reviewing or debugging LLM-powered features and systems — writing or improving prompts, choosing between prompting techniques (chain-of-thought, few-shot, prompt chaining, self-consistency, prompt optimization), building or fixing RAG and retrieval (chunking, embeddings, vector or hybrid search, BM25, reranking, citations, hallucination and grounding checks, deep search, agentic RAG), building agents (tool calling, function calling, ReAct loops, code execution sandboxes, plan-and-execute, multi-agent supervisors), routing (model routers, cascading, semantic routers), structuring multi-step LLM pipelines, or making architectural trade-offs about accuracy, cost and latency in GenAI code. Also use when an LLM call, RAG system or agent gives inconsistent, wrongly formatted, hallucinated or incorrect output, or loops, picks the wrong tool or runs up cost.
 ---
 
 # GenAI Engineering
@@ -29,6 +29,7 @@ and implement it with the example code in `examples/`.
 | Writing or fixing a prompt; wrong format, inconsistent or incorrect answers; reasoning accuracy; splitting a task into steps; systematically tuning prompts | `references/prompting.md` |
 | Grounding answers in private or recent data; chunking, embeddings, vector, keyword or hybrid search; poor retrieval; reranking; citations and hallucinations; multi-document or multi-source questions | `references/rag.md` |
 | Letting the model call tools or APIs, run code, loop over observations, plan multi-step work or coordinate several agents; agents that loop, misuse tools or cost too much | `references/agents.md` |
+| Sending each request to the right model or handler: cheap vs expensive models, escalating on low-quality answers, intent classification; LLM costs too high, simple queries too slow, requests reaching the wrong handler | `references/orchestration.md` |
 
 ## Example code
 

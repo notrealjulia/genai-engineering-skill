@@ -13,6 +13,7 @@ runnable example instead of writing from scratch.
 | 1. Prompting | `references/prompting.md` | Chain-of-thought, few-shot, prompt chaining, self-consistency, prompt optimization |
 | 2. RAG | `references/rag.md` | Basic RAG, semantic indexing, hybrid retrieval (BM25 + vectors, RRF, HyDE), retrieval refinement (filter, dedupe, rerank, compress), grounded generation (citations, claim verification), deep search, agentic RAG |
 | 3. Agents | `references/agents.md` | Tool calling, ReAct, code execution, plan-and-execute, multi-agent (pipeline and supervisor) |
+| 4. Routing & Orchestration | `references/orchestration.md` | Cascading (quality-gated escalation), model router, semantic router |
 
 Each reference has a symptom → pattern decision guide, and per pattern: what it is, when to
 use and avoid it, pitfalls, trade-offs, pairings, and a review checklist. More chapters are

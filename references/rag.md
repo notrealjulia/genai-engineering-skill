@@ -238,11 +238,9 @@ need their own filtering.
 
 **Beyond the book:** *negative answer read as no answer.* When the source says "X is not
 allowed" and the user asks "can I do X?", models often return the refusal message, as if
-the sources were silent. In testing, gpt-4o did this 3/3 times with a plain "if they don't
-answer, reply exactly …" prompt. Say explicitly that a negative answer IS an answer, and
-that the refusal is only for sources that don't address the question at all. With that
-wording gpt-4o answered "no" correctly 3/3 times and still refused all questions the
-sources don't cover (see the prompts in `rag_basic.py` and `rag_grounded.py`).
+the sources were silent. Say explicitly that a negative answer IS an answer, and that the
+refusal is only for sources that don't address the question at all (see the prompts in
+`rag_basic.py` and `rag_grounded.py`).
 
 **Trade-offs:** every check adds latency (Self-RAG can 2–3× generation time).
 Helpfulness vs safety is a **product decision**: strict refusal is trustworthy but
@@ -319,7 +317,8 @@ choice, decomposition, failures, budgets and the final answers.
 tool calling** rather than parsing JSON actions from text (covered in the Agents chapter).
 The example uses a provider-neutral JSON protocol to keep the control flow visible.
 
-**Pairs with:** Tool Calling (the mechanism), Deep Search (a mode within it for multi-hop
+**Pairs with:** Semantic Router (a faster router by embeddings; Routing & Orchestration
+chapter), Tool Calling (the mechanism), Deep Search (a mode within it for multi-hop
 questions), Basic RAG (one of its tools).
 
 **Example:** `examples/rag_agentic.py` (a router plus a bounded agent loop with a trace)
