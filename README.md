@@ -25,12 +25,12 @@ Claude Code skills directory. Claude Code picks it up in new sessions.
 
 **macOS / Linux**
 ```bash
-git clone https://github.com/notrealjulia/genai-engineering.git ~/.claude/skills/genai-engineering
+git clone https://github.com/notrealjulia/genai-engineering-skill.git ~/.claude/skills/genai-engineering
 ```
 
 **Windows (PowerShell)**
 ```powershell
-git clone https://github.com/notrealjulia/genai-engineering.git "$env:USERPROFILE\.claude\skills\genai-engineering"
+git clone https://github.com/notrealjulia/genai-engineering-skill.git "$env:USERPROFILE\.claude\skills\genai-engineering"
 ```
 
 To use it in one project only, clone it into that project's `.claude/skills/genai-engineering`
