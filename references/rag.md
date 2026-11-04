@@ -35,9 +35,8 @@ changing anything.
 | Questions need synthesis across many documents ("compare", "trend", "summarize all") | **Deep Search** |
 | Queries need different sources (docs, SQL, web, APIs), or sometimes no retrieval at all | **Agentic RAG** (start with routing) |
 
-Recommended build order (the book's own advice):
-Basic RAG → hybrid search as the production default → refinement (reranking) →
-grounding checks. Add Deep Search or Agentic RAG only when an evaluation shows the
+Recommended build order (the book's own advice): Basic RAG → hybrid search as the
+production default → refinement (reranking). Add Deep Search or Agentic RAG only when an evaluation shows the
 simpler patterns are insufficient. **Out-of-domain detection and source citations are
 table stakes for any RAG system serving real users.**
 
@@ -110,9 +109,9 @@ switching embedding models means re-embedding everything, since vectors from dif
 models are incompatible. Store the raw text and model name alongside the vectors, and keep
 a re-runnable indexing pipeline.
 
-**Beyond the book:** embed documents once at index time and persist the vectors. Never
-re-embed the corpus per query. Some embedding models expect different prefixes or
-input types for queries vs documents, so check the model's docs.
+Embed documents once at index time and store the vectors alongside the text;
+re-embed only chunks that change. **Beyond the book:** some embedding models expect
+different prefixes or input types for queries vs documents, so check the model's docs.
 
 **Pairs with:** Basic RAG (swap it into the retrieval step), Hybrid Retrieval (most
 production systems end up combining vectors with BM25).
@@ -227,8 +226,8 @@ chunks make citations accurate).
 
 **Use when:** *always* implement out-of-domain detection and source-level citations for real
 users. Add CRAG when the knowledge base has known gaps and a supplementary source exists.
-Add Self-RAG and claim-level verification for high-stakes domains (legal, medical,
-financial compliance).
+Claim-level citation is a good precision/practicality balance for most applications.
+Reserve Self-RAG for high-stakes domains (legal, medical, financial compliance).
 
 **Pitfalls:** an over-aggressive OOD threshold refuses answerable questions, while one set
 too lax lets hallucinations through (tune on both error types). The verifier is the
@@ -237,8 +236,8 @@ converge, so cap iterations and define a fallback. CRAG's web results are unvett
 need their own filtering.
 
 **Beyond the book:** *negative answer read as no answer.* When the source says "X is not
-allowed" and the user asks "can I do X?", models often return the refusal message, as if
-the sources were silent. Say explicitly that a negative answer IS an answer, and that the
+allowed" and the user asks "can I do X?", a strict refusal instruction can make the model
+return the refusal message, as if the sources were silent. Say explicitly that a negative answer IS an answer, and that the
 refusal is only for sources that don't address the question at all (see the prompts in
 `rag_basic.py` and `rag_grounded.py`).
 
@@ -313,8 +312,8 @@ The LLM is in the hot path for every decision, so cost scales with query complex
 maintenance is ongoing, and the agent is only as good as its tools. Testing must cover tool
 choice, decomposition, failures, budgets and the final answers.
 
-**Beyond the book:** in production, implement the loop with your provider's **native
-tool calling** rather than parsing JSON actions from text (covered in the Agents chapter).
+In production, implement the loop with your provider's **native tool calling** rather
+than parsing JSON actions from text, as the book's own agent code does (Agents chapter).
 The example uses a provider-neutral JSON protocol to keep the control flow visible.
 
 **Pairs with:** Semantic Router (a faster router by embeddings; Routing & Orchestration

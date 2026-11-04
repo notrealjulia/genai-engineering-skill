@@ -2,8 +2,10 @@
 
 Set LLM_PROVIDER=openai (default) or anthropic, and optionally LLM_MODEL.
 To use another provider, replace the body of call_llm(). The examples depend only on
-its signature: an OpenAI-style message list in, plain text out.
+its signature: an OpenAI-style message list in, plain text out. call_llm_tool() is the
+native tool-calling variant, used where structured output matters.
 """
+import json
 import os
 
 PROVIDER = os.getenv("LLM_PROVIDER", "openai").lower()
@@ -48,6 +50,41 @@ def call_llm(messages, temperature: float = 0.0, model: str | None = None,
     resp = client.chat.completions.create(model=model, messages=messages,
                                           temperature=temperature, max_tokens=max_tokens)
     return resp.choices[0].message.content
+
+
+def call_llm_tool(messages, tool: dict, temperature: float = 0.0, model: str | None = None,
+                  max_tokens: int = 2048) -> dict | None:
+    """Force one native tool call and return its arguments (a dict), or None.
+
+    tool = {"name", "description", "parameters": <JSON Schema>}. The arguments come back as
+    structured data, so nothing has to be scraped out of prose. For a provider without
+    tool calling, ask for JSON with call_llm() and parse it with agents_common.parse_json.
+    """
+    if isinstance(messages, str):
+        messages = [{"role": "user", "content": messages}]
+    model = model or MODEL
+    client = _get_client()
+
+    if PROVIDER == "anthropic":
+        system = "\n\n".join(m["content"] for m in messages if m["role"] == "system")
+        chat = [m for m in messages if m["role"] != "system"]
+        kwargs = {"system": system} if system else {}
+        resp = client.messages.create(
+            model=model, messages=chat, max_tokens=max_tokens, temperature=temperature,
+            tools=[{"name": tool["name"], "description": tool["description"],
+                    "input_schema": tool["parameters"]}],
+            tool_choice={"type": "tool", "name": tool["name"]}, **kwargs)
+        return next((b.input for b in resp.content if b.type == "tool_use"), None)
+
+    resp = client.chat.completions.create(
+        model=model, messages=messages, temperature=temperature, max_tokens=max_tokens,
+        tools=[{"type": "function", "function": tool}],
+        tool_choice={"type": "function", "function": {"name": tool["name"]}})
+    calls = resp.choices[0].message.tool_calls or []
+    try:  # API-produced JSON, but a truncated reply (max_tokens) can still cut it off
+        return json.loads(calls[0].function.arguments) if calls else None
+    except json.JSONDecodeError:
+        return None
 
 
 # --- Embeddings (used by the RAG examples) -------------------------------------------

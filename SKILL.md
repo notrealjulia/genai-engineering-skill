@@ -34,7 +34,8 @@ and implement it with the example code in `examples/`.
 ## Example code
 
 `examples/` holds runnable, provider-neutral Python, named `<topic>_<pattern>.py`. Every
-example calls `call_llm()` (and RAG examples call `embed()`) from `examples/llm_client.py`,
+example calls `call_llm()` (RAG examples also `embed()`, code execution the native
+tool-calling `call_llm_tool()`) from `examples/llm_client.py`,
 which supports OpenAI and Anthropic for chat, and OpenAI or local sentence-transformers for
 embeddings. Switch with the `LLM_PROVIDER` / `EMBED_PROVIDER` env vars, or replace those
 functions for any other provider. When adapting

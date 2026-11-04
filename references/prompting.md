@@ -115,9 +115,9 @@ flexibility on unusual inputs for consistency on typical ones. Curating examples
 expensive for expert domains.
 
 **Beyond the book:** for strict formats, combine few-shot with the provider's structured
-output or JSON-schema features, and validate the result against the allowed values. With
-providers that support prompt caching, put static examples in a cached prefix to cut their
-recurring cost.
+output or JSON-schema features, and validate the result against the allowed values.
+(The book's caching chapter adds: put static examples in a cached prefix to cut their
+recurring cost.)
 
 **Pairs with:** CoT (few-shot CoT: input → reasoning → output triples), Prompt Chaining
 (targeted examples per step), Prompt Optimization (automated example selection).

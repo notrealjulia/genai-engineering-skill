@@ -40,7 +40,7 @@ confidently. Each layer adds a component to build, monitor and retune.
 
 **Don't route when:** all queries have roughly the same complexity, you only have one model,
 cost is small relative to the value of each request, the price gap between tiers is small
-(cascading needs roughly **10× or more**), or every single request must get top quality.
+(for cascading, a gap of **10× or more** is a strong indicator), or every single request must get top quality.
 With only a few intents and low traffic, one LLM classification call is fine; build the
 semantic router when latency or cost of that call starts to matter.
 
@@ -94,8 +94,9 @@ never set-and-forget. With a response cache in front, only novel queries reach t
 so expect a *higher* escalation rate than in offline tests.
 
 **Beyond the book:** a judge on the same cheap model as the generator shares its blind
-spots, and can approve its own tier's wrong answer with full confidence. Asking it to solve
-the question first doesn't reliably fix that. So **measure the gate, not only the
+spots, and can approve its own tier's wrong answer with full confidence (the book
+suggests the cheap tier for the judge; that keeps cost down but doesn't remove the
+blind spot). The chapter exercise already asks you to **measure the gate, not only the
 models**: on labelled queries, count how often it passes a wrong answer and how often it
 rejects a right one. A gate that passes wrong answers shows up as savings, not as errors.
 Prefer domain checks for anything checkable. Parse the judge's verdict as JSON and treat a
@@ -249,7 +250,7 @@ and remember the cache changes the difficulty mix the routers see.
 
 1. Is there a labelled set of real queries, and a baseline of "everything to one model" for
    cost and quality?
-2. Do the tiers really differ in price (10×+ for cascading) and does traffic spread across
+2. Do the tiers really differ in price (10×+ is a strong signal for cascading) and does traffic spread across
    them, rather than ~95% landing in one?
 3. Is there a cheap fast path, so routing never costs more than it saves?
 4. What happens on an invalid routing decision? Does it fail toward quality (top tier, or
@@ -273,6 +274,6 @@ and remember the cache changes the difficulty mix the routers see.
   per correct output) against the single-model baseline, the share of traffic per tier, the
   escalation rate, and quality on the queries routed to cheap tiers. That's where misrouting
   hides.
-- **Gate accuracy (Beyond the book):** for cascades, score the gate itself: wrong answers it
+- **Gate accuracy** (from the chapter exercise): for cascades, score the gate itself: wrong answers it
   passed vs right answers it rejected. Use LLM-as-Judge or exact answers (Evaluation chapter).
 - Re-run after changing models, prices, tiers, utterances, thresholds or the cache.
