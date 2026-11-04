@@ -27,58 +27,75 @@ def _get_client():
     return _client
 
 
+def _anthropic(messages, model, max_tokens, **extra):
+    # The system prompt is a separate parameter. No temperature: current Claude models
+    # reject non-default sampling parameters (400), so sampling stays at the default, which
+    # still varies enough for self-consistency. Adaptive thinking is on by default and its
+    # tokens count against max_tokens, so leave headroom or the text can come back empty.
+    system = "\n\n".join(m["content"] for m in messages if m["role"] == "system")
+    chat = [m for m in messages if m["role"] != "system"]
+    kwargs = {"system": system} if system else {}
+    return _get_client().messages.create(model=model or MODEL, messages=chat,
+                                         max_tokens=max(max_tokens, 8192), **kwargs, **extra)
+
+
+def _as_messages(messages):
+    return [{"role": "user", "content": messages}] if isinstance(messages, str) else messages
+
+
 def call_llm(messages, temperature: float = 0.0, model: str | None = None,
              max_tokens: int = 1024) -> str:
     """Send chat messages ([{"role": ..., "content": ...}]) and return the reply text.
 
-    Accepts a plain string as shorthand for a single user message.
+    Accepts a plain string as shorthand for a single user message. `temperature` is
+    ignored on Anthropic (see _anthropic).
     """
-    if isinstance(messages, str):
-        messages = [{"role": "user", "content": messages}]
-    model = model or MODEL
-    client = _get_client()
-
+    messages = _as_messages(messages)
     if PROVIDER == "anthropic":
-        # Anthropic takes the system prompt as a separate parameter.
-        system = "\n\n".join(m["content"] for m in messages if m["role"] == "system")
-        chat = [m for m in messages if m["role"] != "system"]
-        kwargs = {"system": system} if system else {}
-        resp = client.messages.create(model=model, messages=chat, max_tokens=max_tokens,
-                                      temperature=temperature, **kwargs)
+        resp = _anthropic(messages, model, max_tokens)
         return "".join(b.text for b in resp.content if b.type == "text")
 
-    resp = client.chat.completions.create(model=model, messages=messages,
-                                          temperature=temperature, max_tokens=max_tokens)
+    resp = _get_client().chat.completions.create(model=model or MODEL, messages=messages,
+                                                 temperature=temperature, max_tokens=max_tokens)
     return resp.choices[0].message.content
+
+
+def call_llm_logprobs(messages, temperature: float = 0.0, model: str | None = None,
+                      max_tokens: int = 1024) -> tuple[str, list[float] | None]:
+    """Like call_llm(), plus one log probability per generated token, or None when the
+    provider doesn't return them (Anthropic's API doesn't): callers need a fallback."""
+    if PROVIDER != "openai":
+        return call_llm(messages, temperature, model, max_tokens), None
+    resp = _get_client().chat.completions.create(
+        model=model or MODEL, messages=_as_messages(messages), temperature=temperature,
+        max_tokens=max_tokens, logprobs=True)
+    choice = resp.choices[0]
+    tokens = choice.logprobs.content if choice.logprobs else None
+    return choice.message.content, [t.logprob for t in tokens] if tokens else None
 
 
 def call_llm_tool(messages, tool: dict, temperature: float = 0.0, model: str | None = None,
                   max_tokens: int = 2048) -> dict | None:
-    """Force one native tool call and return its arguments (a dict), or None.
+    """Request one native tool call and return its arguments (a dict), or None.
 
     tool = {"name", "description", "parameters": <JSON Schema>}. The arguments come back as
     structured data, so nothing has to be scraped out of prose. For a provider without
     tool calling, ask for JSON with call_llm() and parse it with agents_common.parse_json.
     """
-    if isinstance(messages, str):
-        messages = [{"role": "user", "content": messages}]
-    model = model or MODEL
-    client = _get_client()
-
+    messages = _as_messages(messages)
     if PROVIDER == "anthropic":
-        system = "\n\n".join(m["content"] for m in messages if m["role"] == "system")
-        chat = [m for m in messages if m["role"] != "system"]
-        kwargs = {"system": system} if system else {}
-        resp = client.messages.create(
-            model=model, messages=chat, max_tokens=max_tokens, temperature=temperature,
-            tools=[{"name": tool["name"], "description": tool["description"],
-                    "input_schema": tool["parameters"]}],
-            tool_choice={"type": "tool", "name": tool["name"]}, **kwargs)
+        # Current Claude models (Opus/Sonnet 5.5, Fable 5.1) reject a forced tool_choice
+        # with a 400: ask for the tool in the prompt, and callers handle "no call" (None).
+        last = {**messages[-1], "content": messages[-1]["content"]
+                + f"\n\nReply by calling the {tool['name']} tool."}
+        resp = _anthropic(messages[:-1] + [last], model, max_tokens, tools=[{
+            "name": tool["name"], "description": tool["description"],
+            "input_schema": tool["parameters"]}])
         return next((b.input for b in resp.content if b.type == "tool_use"), None)
 
-    resp = client.chat.completions.create(
-        model=model, messages=messages, temperature=temperature, max_tokens=max_tokens,
-        tools=[{"type": "function", "function": tool}],
+    resp = _get_client().chat.completions.create(
+        model=model or MODEL, messages=messages, temperature=temperature,
+        max_tokens=max_tokens, tools=[{"type": "function", "function": tool}],
         tool_choice={"type": "function", "function": {"name": tool["name"]}})
     calls = resp.choices[0].message.tool_calls or []
     try:  # API-produced JSON, but a truncated reply (max_tokens) can still cut it off

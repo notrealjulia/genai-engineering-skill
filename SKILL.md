@@ -1,6 +1,6 @@
 ---
 name: genai-engineering
-description: Use when designing, building, reviewing or debugging LLM-powered features and systems — writing or improving prompts, choosing between prompting techniques (chain-of-thought, few-shot, prompt chaining, self-consistency, prompt optimization), building or fixing RAG and retrieval (chunking, embeddings, vector or hybrid search, BM25, reranking, citations, hallucination and grounding checks, deep search, agentic RAG), building agents (tool calling, function calling, ReAct loops, code execution sandboxes, plan-and-execute, multi-agent supervisors), routing (model routers, cascading, semantic routers), structuring multi-step LLM pipelines, or making architectural trade-offs about accuracy, cost and latency in GenAI code. Also use when an LLM call, RAG system or agent gives inconsistent, wrongly formatted, hallucinated or incorrect output, or loops, picks the wrong tool or runs up cost.
+description: Use when designing, building, reviewing or debugging LLM features: prompts (chain-of-thought, few-shot, chaining, self-consistency, prompt optimization), RAG (chunking, embeddings, hybrid/BM25 search, reranking, citations, deep search, agentic RAG), agents (tool calling, ReAct, code execution, plan-and-execute, multi-agent), routing (model routers, cascading, semantic routers) and safety (guardrails, prompt injection via users, documents, files or tool outputs, PII, self-check). Also when output is inconsistent, badly formatted, hallucinated or wrong, an agent loops or picks the wrong tool, or LLM costs run high.
 ---
 
 # GenAI Engineering
@@ -30,12 +30,13 @@ and implement it with the example code in `examples/`.
 | Grounding answers in private or recent data; chunking, embeddings, vector, keyword or hybrid search; poor retrieval; reranking; citations and hallucinations; multi-document or multi-source questions | `references/rag.md` |
 | Letting the model call tools or APIs, run code, loop over observations, plan multi-step work or coordinate several agents; agents that loop, misuse tools or cost too much | `references/agents.md` |
 | Sending each request to the right model or handler: cheap vs expensive models, escalating on low-quality answers, intent classification; LLM costs too high, simple queries too slow, requests reaching the wrong handler | `references/orchestration.md` |
+| Keeping the model inside its rules: prompt injection (from users, documents, uploaded files, CSV cells or tool outputs), validating uploads, PII leaks, unsafe advice, policy checks; flagging confident but wrong answers (logprobs, consistency, claim checks) | `references/safety.md` |
 
 ## Example code
 
 `examples/` holds runnable, provider-neutral Python, named `<topic>_<pattern>.py`. Every
 example calls `call_llm()` (RAG examples also `embed()`, code execution the native
-tool-calling `call_llm_tool()`) from `examples/llm_client.py`,
+tool-calling `call_llm_tool()`, self-check `call_llm_logprobs()`) from `examples/llm_client.py`,
 which supports OpenAI and Anthropic for chat, and OpenAI or local sentence-transformers for
 embeddings. Switch with the `LLM_PROVIDER` / `EMBED_PROVIDER` env vars, or replace those
 functions for any other provider. When adapting

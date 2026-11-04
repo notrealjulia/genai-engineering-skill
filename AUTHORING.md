@@ -74,7 +74,7 @@ Every example must:
 - Start with a docstring: what it does, plus attribution: either "Adapted from GenAI
   Patterns (S. Pandey, CC BY-NC 4.0)" or "Based on the pattern described in … the book has
   no code for this pattern."
-- Call models only through `llm_client` (`call_llm()`, `call_llm_tool()`, `embed()`). No
+- Call models only through `llm_client` (`call_llm()`, `call_llm_tool()`, `call_llm_logprobs()`, `embed()`). No
   provider SDK calls in examples.
 - Be stdlib + numpy only, unless the pattern really needs a library. Then import it
   inside the function that uses it.

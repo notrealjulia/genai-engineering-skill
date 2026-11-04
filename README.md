@@ -14,6 +14,7 @@ runnable example instead of writing from scratch.
 | 2. RAG | `references/rag.md` | Basic RAG, semantic indexing, hybrid retrieval (BM25 + vectors, RRF, HyDE), retrieval refinement (filter, dedupe, rerank, compress), grounded generation (citations, claim verification), deep search, agentic RAG |
 | 3. Agents | `references/agents.md` | Tool calling, ReAct, code execution, plan-and-execute, multi-agent (pipeline and supervisor) |
 | 4. Routing & Orchestration | `references/orchestration.md` | Cascading (quality-gated escalation), model router, semantic router |
+| 5. Safety & Guardrails | `references/safety.md` | Guardrails (input, retrieval, execution, output; injection through documents, files and tool outputs; upload validation; PII redaction), self-check (logprobs with a no-logprobs fallback), both chapter exercises (`safety_exercises.py`) |
 
 Each reference has a symptom → pattern decision guide, and per pattern: what it is, when to
 use and avoid it, pitfalls, trade-offs, pairings, and a review checklist. More chapters are
@@ -76,7 +77,10 @@ Notes:
   is **not** a security sandbox. Read the warning in the file before using it on untrusted
   input.
 - All examples have been run against the real OpenAI API (gpt-4o, text-embedding-3-small).
-  The Anthropic chat path is implemented but hasn't been tested end to end yet.
+  The Anthropic path follows the current API rules (no `temperature`, no forced
+  `tool_choice`, which Opus/Sonnet 5.5 reject) and its request shape is checked with a stub,
+  but it hasn't been run against the live API yet. Claude has no logprobs, so
+  `safety_self_check.py` uses its sampling fallback there.
 
 ## Attribution
 

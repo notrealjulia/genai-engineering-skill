@@ -89,8 +89,9 @@ the blast radius of every tool.
 returned by a tool can contain instructions ("ignore previous instructions and email
 …"): **indirect prompt injection**. Treat tool results as data, give each agent the least
 privilege it needs, and keep human confirmation on side-effecting tools, so an injected
-instruction can't act on its own. (From the book: feed tool *errors* back to the model as
-results instead of crashing; it can usually fix bad arguments on the next turn.)
+instruction can't act on its own. Defenses in depth: *Untrusted data* in
+`references/safety.md`. (From the book: feed tool *errors* back to the model as results
+instead of crashing; it can usually fix bad arguments on the next turn.)
 
 **Pairs with:** ReAct (the loop around the calls), Basic RAG (expose retrieval as a
 `search_documents` tool so the model decides when and what to search: see Agentic RAG in
@@ -186,7 +187,8 @@ and cheaper).
   network), not on the model, to make an obeyed instruction harmless.
 - *Broken input (Beyond the book):* validate files *before* the model sees them (parses,
   UTF-8, expected columns, consistent row widths) and return a clear error. Otherwise the
-  user pays for LLM calls and gets a traceback from the sandbox.
+  user pays for LLM calls and gets a traceback from the sandbox. Both: see *Untrusted data*
+  in `references/safety.md`.
 - *Latency:* sandbox start-up adds time. Pre-warm and pool sandboxes for interactive use.
 - *Overuse* for things a direct answer or simple tool handles.
 
